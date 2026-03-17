@@ -16,6 +16,58 @@ bool testVectorWithValue()
   return !v.isEmpty();
 }
 
+bool testGetSizeWithValues()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  return v.getSize() == 3;
+}
+
+bool testGetSizeWithoutValues()
+{
+  topit::Vector<int> v;
+  return v.getSize() == 0;
+}
+
+bool testGetCapacityWithValues()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  return v.getCapacity() == 10;
+}
+
+bool testGetCapacityWithoutValues()
+{
+  topit::Vector<int> v;
+  return v.getCapacity() == 0;
+}
+
+bool testPushBack()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  return v[0] == 1;
+}
+
+bool testPopBackValue()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.popBack();
+  return v.getSize() == 0;
+}
+
+bool testPopBackNoValue()
+{
+  topit::Vector<int> v;
+  v.popBack();
+  return v.getSize() == 0;
+}
+
 int main()
 {
   using test_t = bool(*)();
