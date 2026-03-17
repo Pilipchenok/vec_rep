@@ -9,12 +9,20 @@ bool testDefaultVector()
   return !c;
 }
 
+bool testVectorWithValue()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  return !v.isEmpty();
+}
+
 int main()
 {
   using test_t = bool(*)();
   using pair_t = std::pair< const char*, test_t>;
   pair_t tests[] = {
-    {"Default vector is empty", testDefaultVector}
+    {"Default vector is empty", testDefaultVector},
+    {"Vector with amy value is not empty", testVectorWithValue},
   };
 
   const size_t count = sizeof(tests) / sizeof(pair_t);
