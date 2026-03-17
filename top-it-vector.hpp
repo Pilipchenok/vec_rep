@@ -13,7 +13,7 @@ namespace topit
     bool isEmpty() const noexcept;
     size_t getSize() const noexcept;
     size_t getCapacity() const noexcept;
-    void pushBack(const T&);
+    void pushBack(const T& k);
     void popBack();
 
     private:
@@ -30,9 +30,38 @@ bool topit::Vector<T>::isEmpty() const noexcept
 }
 
 template <class T>
-void topit::Vector<T>::pushBack(const T&)
+size_t topit::Vector<T>::getSize() const noexcept
 {
-  
+  return size_;
+}
+
+template <class T>
+size_t topit::Vector<T>::getCapacity() const noexcept
+{
+  return capasity_;
+}
+
+template <class T>
+void topit::Vector<T>::pushBack(const T& k)
+{
+  if(size_ == capasity_)
+  {
+    T* data = new T[capasity_ + 10];
+    capasity_ = capasity_ + 10;
+    for(size_t i = 0; i < size_; ++i)
+    {
+      data[i] = data_[i];
+    }
+    delete[] data_;
+    data_ = data; 
+  }
+  data_[size_++] = k;
+}
+
+template <class T>
+void topit::Vector<T>::popBack()
+{
+  --size_;
 }
 
 template <class T>
