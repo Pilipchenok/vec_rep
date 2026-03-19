@@ -6,8 +6,7 @@
 bool testDefaultVector()
 {
   topit::Vector<int> v;
-  bool c = v.isEmpty();
-  return !c;
+  return v.isEmpty();
 }
 
 bool testVectorWithValue()

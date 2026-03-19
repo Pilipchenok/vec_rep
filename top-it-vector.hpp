@@ -2,7 +2,7 @@
 #define TOP_IT_VECTOR_HPP
 #include <cstddef>
 #include <cassert>
-#include <iostream>
+#include <algorithm>
 namespace topit
 {
   template <class T> struct Vector
@@ -46,12 +46,17 @@ void topit::Vector<T>::pushFront(T val)
 template <class T>
 void topit::Vector<T>::popFront()
 {
-  Vector<T> cpy((*this).getSize() - 1);
-  for(size_t i = 1; i < (*this).getSize(); ++i)
+  if((*this).getSize() > 0)
   {
-    cpy[i - 1] = (*this)[i];
+    Vector<T> cpy((*this).getSize() - 1);
+    for(size_t i = 1; i < (*this).getSize(); ++i)
+    {
+      cpy[i - 1] = (*this)[i];
+    }
+    swap(cpy);
+  } else {
+    return;
   }
-  swap(cpy);
 }
 
 template <class T>
@@ -124,7 +129,7 @@ void topit::Vector<T>::pushBack(const T& k)
 template <class T>
 void topit::Vector<T>::popBack()
 {
-  if(size_ > 0)
+  if((*this).getSize() > 0)
   {
     --size_;
   } else {
