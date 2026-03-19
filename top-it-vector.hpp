@@ -19,8 +19,8 @@ namespace topit
     size_t getCapacity() const noexcept;
     void pushBack(const T& k);
     void popBack();
-    void pushFront(Vector<T>& val);
-    void popFront(Vector<T>& val);
+    void pushFront(T val);
+    void popFront();
 
     void swap(Vector<T>& rhs) noexcept;
 
@@ -32,13 +32,24 @@ namespace topit
 } // namespace topit
 
 template <class T>
-void topit::Vector<T>::pushFront(Vector<T>& val)
+void topit::Vector<T>::pushFront(T val)
 {
-  Vector<T> cpy(val.getSize() + 1);
+  Vector<T> cpy((*this).getSize() + 1);
   cpy[0] = val;
-  for(size_t i = 1; i <cpy.getSize(); ++i)
+  for(size_t i = 1; i < cpy.getSize(); ++i)
   {
     cpy[i] = (*this)[i - 1];
+  }
+  swap(cpy);
+}
+
+template <class T>
+void topit::Vector<T>::popFront()
+{
+  Vector<T> cpy((*this).getSize() - 1);
+  for(size_t i = 1; i < (*this).getSize(); ++i)
+  {
+    cpy[i - 1] = (*this)[i];
   }
   swap(cpy);
 }
