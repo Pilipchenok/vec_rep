@@ -68,6 +68,27 @@ bool testPopBackNoValue()
   return v.getSize() == 0;
 }
 
+bool testElementAccess()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  return v[0] == 1 && v[1] == 2;
+}
+
+bool testCopyConstructor()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  topit::Vector<int> yav = v;
+  bool isAllEqual = v.getSize() == yav.getSize();
+  for(size_t i = 0; isAllEqual && i < v.getSize(); ++i)
+  {
+    isAllEqual = isAllEqual && (v[i] == yav[i]);
+  }
+  return isAllEqual;
+}
+
 int main()
 {
   using test_t = bool(*)();
@@ -75,6 +96,15 @@ int main()
   pair_t tests[] = {
     {"Default vector is empty", testDefaultVector},
     {"Vector with amy value is not empty", testVectorWithValue},
+    {"", testGetSizeWithValues},
+    {"", testGetSizeWithoutValues},
+    {"", testGetCapacityWithValues},
+    {"", testGetCapacityWithoutValues},
+    {"", testPushBack},
+    {"", testPopBackValue},
+    {"", testPopBackNoValue},
+    {"Inbound access elements", testElementAccess}, 
+    {"Sizes must be as elemets", testCopyConstructor}
   };
 
   const size_t count = sizeof(tests) / sizeof(pair_t);
