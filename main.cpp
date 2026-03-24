@@ -172,6 +172,8 @@ bool testSwap()
 
 int main()
 {
+  topit::Vector<int> v, yav;
+  v = v;
   using test_t = bool(*)();
   using pair_t = std::pair< const char*, test_t>;
   pair_t tests[] = {
