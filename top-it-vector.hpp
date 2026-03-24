@@ -15,6 +15,8 @@ namespace topit
     Vector<T>& operator=(Vector<T>&&) noexcept;
     T& operator[](size_t index) noexcept;
     const T& operator[](size_t index) const noexcept;
+    T& at(size_t id);
+    const T& at(size_t id) const;
 
     bool isEmpty() const noexcept;
     size_t getSize() const noexcept;
@@ -23,8 +25,14 @@ namespace topit
     void popBack();
     void pushFront(T val);
     void popFront();
-
     void swap(Vector<T>& rhs) noexcept;
+
+    //Строгая гарантия + тесты
+    //По желанию: реализовать итераторы для вектора, Придумать еще 3 insert и erase, но с итераторами, протестировать
+    void insert(size_t i, const T& val);
+    void erase(size_t i);
+    void insert(size_t i, const Vector<T>& rhs, size_t beg, size_t end);
+    void erase(size_t beg, size_t end);
 
     private:
       T *data_;
@@ -179,8 +187,9 @@ topit::Vector<T>::~Vector()
 template <class T>
 T& topit::Vector<T>::operator[](size_t index) noexcept
 {
-  assert(index < getSize());
-  return data_[index];
+  const Vector<T>* cthis = this;
+  const T& ret = (*cthis)[index];
+  return const_cast<T&>(ret);
 }
 
 template <class T>
@@ -188,6 +197,25 @@ const T& topit::Vector<T>::operator[](size_t index) const noexcept
 {
   assert(index < getSize());
   return data_[index];
+}
+
+template <class T>
+T& topit::Vector<T>::at(size_t id)
+{
+  const Vector<T>* cthis = this;
+  const T& ret = cthis->at(id);
+  return const_cast<T&>(ret);
+  // return const_cast<T&>(statis_cast<const Vector<T>*>(this)->at(id));
+}
+
+template <class T>
+const T& topit::Vector<T>::at(size_t id) const
+{
+  if(id < getSize())
+  {
+    return (*this)[id];
+  }
+  throw std::range_error("bad id");
 }
 
 #endif
