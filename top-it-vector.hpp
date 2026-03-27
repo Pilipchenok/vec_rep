@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cassert>
 #include <algorithm>
+#include <stdexcept>
 namespace topit
 {
   template <class T> struct Vector
@@ -205,7 +206,6 @@ T& topit::Vector<T>::at(size_t id)
   const Vector<T>* cthis = this;
   const T& ret = cthis->at(id);
   return const_cast<T&>(ret);
-  // return const_cast<T&>(statis_cast<const Vector<T>*>(this)->at(id));
 }
 
 template <class T>
@@ -215,7 +215,97 @@ const T& topit::Vector<T>::at(size_t id) const
   {
     return (*this)[id];
   }
-  throw std::range_error("bad id");
+  throw std::out_of_range("bad id");
+}
+
+template <class T>
+void topit::Vector<T>::insert(size_t i, const T& val)
+{
+  if (i > size_)
+  {
+    throw std::range_error("Invalid arguments");
+  }
+  Vector<T> data(size_ + 1);
+
+  for(size_t j = 0; j < i; ++j)
+  {
+    data[j] = (*this)[j];
+  }
+  data[i] = val;
+  for(size_t j = i + 1; j < size_; ++j)
+  {
+    data[j] = (*this)[j - 1];
+  }
+  swap(data);
+}
+
+template <class T>
+void topit::Vector<T>::erase(size_t i)
+{
+  if (size_ == 0 || i > size_ - 1)
+  {
+    throw std::range_error("Invalid arguments");
+  }
+
+  Vector<T> data(size_ - 1);
+  for(size_t j = 0; j < i; ++j)
+  {
+    data[j] = (*this)[j];
+  }
+  for(size_t j = i + 1; j < size_; ++j)
+  {
+    data[j - 1] = (*this)[j];
+  }
+
+  swap(data);
+}
+
+template <class T>
+void topit::Vector<T>::insert(size_t i, const Vector<T>& rhs, size_t beg, size_t end)
+{
+  if (end >= rhs.getSize() || i > size_ || end < beg)
+  {
+    throw std::range_error("Invalid arguments");
+  }
+  size_t countAdd;
+  countAdd = end - beg + 1;
+  Vector<T> data(size_ + countAdd);
+
+  for(size_t j = 0; j < i; ++j)
+  {
+    data[j] = (*this)[j];
+  }
+  size_t rhsCount = beg;
+  for(size_t j = i; j < i + countAdd; ++j)
+  {
+    data[j] = rhs[rhsCount];
+    ++rhsCount;
+  }
+  for(size_t j = i + countAdd; j < size_; ++j)
+  {
+    data[j] = (*this)[j - countAdd];
+  }
+  swap(data);
+}
+
+template <class T>
+void topit::Vector<T>::erase(size_t beg, size_t end)
+{
+  if (end < beg || end > size_ - 1)
+  {
+    throw std::range_error("Invalid arguments");
+  }
+  size_t countEr = end - beg + 1;
+  Vector<T> data(size_ - countEr);
+  for(size_t j = 0; j < beg; ++j)
+  {
+    data[j] = (*this)[j];
+  }
+  for(size_t j = beg + countEr; j < size_; ++j)
+  {
+    data[j - countEr] = (*this)[j];
+  }
+  swap(data);
 }
 
 #endif

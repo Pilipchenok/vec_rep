@@ -228,6 +228,267 @@ bool testSwap()
   return isAllEqual;
 }
 
+bool testBaseInsert()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(3);
+  
+  try{
+    v.insert(1, 2);
+    return v[1] == 2;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testOverflowInsert()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(3);
+  try
+  {
+    v.insert(10, 2);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testBaseErase()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+
+  try{
+    v.erase(1);
+    return v.getSize() == 2 && v[0] == 1 && v[1] == 3;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testNoValuesErase()
+{
+  topit::Vector<int> v;
+  try
+  {
+    v.erase(0);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testOverflowErase()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  try
+  {
+    v.erase(10);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testManyBaseInsert()
+{
+  topit::Vector<int> rhs;
+  rhs.pushBack(1);
+  rhs.pushBack(2);
+  rhs.pushBack(3);
+  rhs.pushBack(4);
+  rhs.pushBack(5);
+  rhs.pushBack(6);
+
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+
+  try{
+    v.insert(1, rhs, 3, 4);
+    return v[1] == 4 && v[2] == 5 && v.getSize() == 5;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testManyIncorrectRhsInsert()
+{
+  topit::Vector<int> rhs;
+  rhs.pushBack(1);
+  rhs.pushBack(2);
+  rhs.pushBack(3);
+  rhs.pushBack(4);
+  rhs.pushBack(5);
+  rhs.pushBack(6);
+
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  try
+  {
+    v.insert(1, rhs, 4, 10);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testManyIncorrectVInsert()
+{
+  topit::Vector<int> rhs;
+  rhs.pushBack(1);
+  rhs.pushBack(2);
+  rhs.pushBack(3);
+  rhs.pushBack(4);
+  rhs.pushBack(5);
+  rhs.pushBack(6);
+
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  try
+  {
+    v.insert(100, rhs, 3, 4);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testManyIncorrectIndexesInsert()
+{
+  topit::Vector<int> rhs;
+  rhs.pushBack(1);
+  rhs.pushBack(2);
+  rhs.pushBack(3);
+  rhs.pushBack(4);
+  rhs.pushBack(5);
+  rhs.pushBack(6);
+
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  try
+  {
+    v.insert(1, rhs, 4, 3);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+  return v[1] == 2 && v.getSize() == 3;
+}
+
+bool testBaseManyErase()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  try{
+    v.erase(1, 2);
+    return v.getSize() == 1 && v[0] == 1;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testOverflowIndexesManyErase()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  try{
+    v.erase(5, 10);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+bool testUncorrectIndexesManyErase()
+{
+  topit::Vector<int> v;
+  v.pushBack(1);
+  v.pushBack(2);
+  v.pushBack(3);
+  try{
+    v.erase(2, 1);
+    return false;
+  }
+  catch(std::range_error)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
 int main()
 {
   topit::Vector<int> v, yav;
@@ -256,15 +517,29 @@ int main()
     {"Correct adding many values to the beginning", testPushFrontManyValues},
     {"Correct deleting first value", testPopFront},
     {"Correct deleting no values from beginning", testPopFrontNoValue},
-    {"Correct swapping vectors", testSwap}
+    {"Correct swapping vectors", testSwap},
+    {"Correct inserting one value", testBaseInsert},
+    {"Correct throwing invalid index in insert", testOverflowInsert},
+    {"Correct erasing one value", testBaseErase},
+    {"Correct erasing from empty vector", testNoValuesErase},
+    {"Correct throwing invalid index in erasing", testOverflowErase},
+    {"Correct inserting many values", testManyBaseInsert},
+    {"Correct throwing incorrect index of inserting vector", testManyIncorrectRhsInsert},
+    {"Correct throwing incorrect index of vector for insert", testManyIncorrectVInsert},
+    {"Correct throwing invalid order of indexes in inserting vector", testManyIncorrectIndexesInsert},
+    {"Correct erasing many elements", testBaseManyErase},
+    {"Correct throwing overflow indexes of many erasing", testOverflowIndexesManyErase},
+    {"Correct throwing uncorrect indexes of many erasing", testUncorrectIndexesManyErase}
   };
 
+  bool all = true;
   const size_t count = sizeof(tests) / sizeof(pair_t);
   std::cout << std::boolalpha;
   for(size_t i = 0; i < count; ++i)
   {
     bool res = tests[i].second();
-    //std::cout << tests[i].first << ": " << res << "\n";
-    std::cout << std::left << std::setw(43) << tests[i].first << ": " << res << "\n";
+    std::cout << std::left << std::setw(61) << tests[i].first << ": " << res << "\n";
+    all = all && res;
   }
+  std::cout << "RESULT: " << all << "\n";
 }
