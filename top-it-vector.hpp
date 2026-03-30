@@ -3,7 +3,9 @@
 #include <cstddef>
 #include <cassert>
 #include <algorithm>
+#include <initializer_list>
 #include <stdexcept>
+
 namespace topit
 {
   template <class T> struct Vector
@@ -11,6 +13,7 @@ namespace topit
     Vector();
     Vector(const Vector<T>&);
     Vector(Vector<T>&&) noexcept;
+    explicit Vector(std::initializer_list<T> il);
     ~Vector();
     Vector<T>& operator=(const Vector<T>&);
     Vector<T>& operator=(Vector<T>&&) noexcept;
@@ -22,14 +25,16 @@ namespace topit
     bool isEmpty() const noexcept;
     size_t getSize() const noexcept;
     size_t getCapacity() const noexcept;
+    void reserve(size_t cap);
+    void shrinkToFit();
     void pushBack(const T& k);
     void popBack();
     void pushFront(T val);
     void popFront();
     void swap(Vector<T>& rhs) noexcept;
 
-    //Строгая гарантия + тесты
-    //По желанию: реализовать итераторы для вектора, Придумать еще 3 insert и erase, но с итераторами, протестировать
+    //Переделать работу с памятью.
+    //Убедиться в том, что вектору не требуется конструктор по умолчанию (!)
     void insert(size_t i, const T& val);
     void erase(size_t i);
     void insert(size_t i, const Vector<T>& rhs, size_t beg, size_t end);
@@ -39,8 +44,50 @@ namespace topit
       T *data_;
       size_t size_, capacity_;
       explicit Vector(size_t k);
+      void pushBackImpl(const T&); //реализовать
+      void reserve(size_t pos, size_t k); //реализовать
+
   };
 } // namespace topit
+
+template <class T>
+topit::Vector<T>::Vector(std::initializer_list<T> il):
+  Vector(il.size())
+{
+  size_t i = 0;
+  for(auto&& v: il)
+  {
+    data_[i++] = std::move(v);
+  }
+}
+
+template <class T>
+void topit::Vector<T>::reserve(size_t cap)
+{
+  if (capacity_ >= cap)
+  {
+    return;
+  }
+  T* d = static_cast<T*>(::operator new (sizeof(T) * cap));
+  size_t i = 0;
+  try{
+    for(; i < getSize(); ++i)
+    {
+      new (d + i) T(std::move(data_[i]));
+    }
+  }catch(...)
+  {
+    for(size_t j = 0; j < i; ++j)
+    {
+      (d + i)->~T();
+    }
+    ::operator delete (d);
+    throw;
+  }
+  delete[] data_;
+  data_ = d;
+  capacity_ = cap;
+}
 
 template <class T>
 void topit::Vector<T>::pushFront(T val)
@@ -103,10 +150,26 @@ topit::Vector<T>& topit::Vector<T>::operator=(Vector<T>&& rhs) noexcept
 
 template <class T>
 topit::Vector<T>::Vector(size_t k):
-  data_(new T[k]),
-  size_(k),
+  data_(static_cast<T*>(::operator new (sizeof(T) * k))),
+  size_(0),
   capacity_(k)
-{}
+{
+  size_t i = 0;
+  try{
+    for(size_t i = 0; i < k; ++i)
+    {
+      new (data_ + i) T();
+    }
+  } catch(...)
+  {
+    for(size_t j = 0; j < i; ++j)
+    {
+      (data_ + i)->~T();
+    }
+    ::operator delete (data_);
+    throw;
+  }
+}
 
 template <class T>
 topit::Vector<T>& topit::Vector<T>::operator=(const Vector<T>& rhs)
@@ -169,7 +232,6 @@ void topit::Vector<T>::popBack()
   } else {
     return;
   }
-  
 }
 
 template <class T>
@@ -182,7 +244,10 @@ topit::Vector<T>::Vector():
 template <class T>
 topit::Vector<T>::~Vector()
 {
-  delete[] data_;
+  for(size_t i = 0; i < getSize(); ++i)
+  {
+
+  }
 }
 
 template <class T>

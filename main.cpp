@@ -489,6 +489,12 @@ bool testUncorrectIndexesManyErase()
   }
 }
 
+bool testInitializerListConstructor()
+{
+  topit::Vector<int> v{1, 2};
+  return v.getSize() == 2;
+}
+
 int main()
 {
   topit::Vector<int> v, yav;
@@ -529,7 +535,8 @@ int main()
     {"Correct throwing invalid order of indexes in inserting vector", testManyIncorrectIndexesInsert},
     {"Correct erasing many elements", testBaseManyErase},
     {"Correct throwing overflow indexes of many erasing", testOverflowIndexesManyErase},
-    {"Correct throwing uncorrect indexes of many erasing", testUncorrectIndexesManyErase}
+    {"Correct throwing uncorrect indexes of many erasing", testUncorrectIndexesManyErase},
+    {"Vector with initializer list must be same size as init-list", testInitializerListConstructor}
   };
 
   bool all = true;
