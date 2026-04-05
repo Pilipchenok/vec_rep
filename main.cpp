@@ -66,7 +66,10 @@ bool testPopBackNoValue()
   topit::Vector<int> v;
   try{
     v.popBack();
-    return v.getSize() == 0;
+    return false;
+  } catch(std::out_of_range)
+  {
+    return true;
   } catch(...)
   {
     return false;
@@ -205,7 +208,10 @@ bool testPopFrontNoValue()
   topit::Vector<int> v;
   try{
     v.popFront();
-    return v.getSize() == 0;
+    return false;
+  } catch(std::out_of_range)
+  {
+    return true;
   } catch(...)
   {
     return false;
